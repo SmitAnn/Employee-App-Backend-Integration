@@ -4,9 +4,6 @@ var Bodyparser = require("body-parser");
 var Mongoogse = require("mongoose");
 var Cors = require("cors");
 
-const { default: mongoose } = require("mongoose");
-// const { employeeModel } = require("./model/employee");
-
 var app = new express();
 app.use(Bodyparser.json());
 app.use(Bodyparser.urlencoded({ extended: false }));
