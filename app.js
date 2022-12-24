@@ -5,7 +5,7 @@ var Mongoogse = require("mongoose");
 var Cors = require("cors");
 
 const { default: mongoose } = require("mongoose");
-const { employeeModel } = require("./model/employee");
+// const { employeeModel } = require("./model/employee");
 
 var app = new express();
 app.use(Bodyparser.json());
