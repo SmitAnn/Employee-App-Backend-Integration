@@ -24,25 +24,29 @@ Mongoogse.connect("mongodb+srv://Smita_08:Chennai88@cluster0.7vhoi24.mongodb.net
 //TODO: get data from db  using api '/api/employeelist'
 
 
-
-app.get('/api/employeelist', (req, res) => {
-
-    employeeModel.find((err, employee) => {
-
-        res.send(employee);
-    });
-    console.log("Employees Details now on Screen!")
+app.get('/api/employeelist', async (req, res) => {
+    try {
+        let data = await employeeModel.find();
+        res.send(data);
+        console.log("Employees Details now on Screen!")
+    }
+    catch {
+        res.status(400).json({ message: err.message })
+    }
 });
-
 
 //TODO: get single data from db  using api '/api/employeelist/:id'
 
 app.get('/api/employeelist/:id', async (req, res) => {
-    let id = req.params.id;
-    employeeModel.findOne({ _id: id }, (err, employee) => {
-        res.send(employee);
-    });
 
+    try {
+        let id = req.params.id;
+        let data = await employeeModel.findOne({ _id: id })
+        res.send(data);
+    }
+    catch {
+        res.status(400).json({ message: err.message })
+    }
 });
 
 
@@ -51,56 +55,58 @@ app.get('/api/employeelist/:id', async (req, res) => {
 //Request body format:{name:'',location:'',position:'',salary:''}
 
 app.post('/api/employeelist', async (req, res) => {
-    let data = req.body;
-    let employee = new employeeModel(data);
-    await employee.save(
-        (err, data) => {
-            if (err) {
-                res.json({ "Status": "Error", "Error": err });
-            } else {
-                res.json({ "Status": "Success", "Data": data });
-            }
-        })
-    console.log("Data added successfully!");
-});
-
-//TODO: delete a employee data from db by using api '/api/employeelist/:id'
-
-
-app.delete("/api/employeelist/:id", (req, res) => {
-    let data = req.body;
-    id = req.params.id;
-    employeeModel.findByIdAndDelete({ "_id": id }, data, (err, data) => {
-        if (err) {
-            res.json({ "Status": "Error", "Error": err })
-        } else {
-            res.json({ "Status": "deleted", "Data": data })
-            console.log("data deleted successfully");
-        }
-    });
-});
-
-//TODO: Update  a employee data from db by using api '/api/employeelist'
-//Request body format:{name:'',location:'',position:'',salary:''}
-
-app.put('/api/employeelist', (req, res) => {
-
     let data = {
         name: req.body.name,
         location: req.body.location,
         position: req.body.position,
         salary: req.body.salary
     }
-    let name = req.body.name;
+    let employee = new employeeModel(data);
 
-    employeeModel.findOneAndUpdate({ "name": name }, data, (err, data) => {
-        if (err) {
-            res.json({ "Status": "Error", "Error": err });
-        } else {
-            res.json({ "Status": "Updated", "Data": data });
+    try {
+        let postedData = await employee.save();
+        res.send(postedData);
+        console.log("Data add successfully!");
+    }
+    catch {
+        res.status(400).json({ message: err.message })
+    }
+});
+
+//TODO: delete a employee data from db by using api '/api/employeelist/:id'
+
+
+app.delete("/api/employeelist/:id", async (req, res) => {
+    try {
+        let data = req.body;
+        id = req.params.id;
+        const updatedResult = await employeeModel.findByIdAndDelete({ "_id": id }, data);
+        res.send(updatedResult)
+    }
+    catch {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+//TODO: Update  a employee data from db by using api '/api/employeelist'
+//Request body format:{name:'',location:'',position:'',salary:''}
+
+app.put('/api/employeelist', async (req, res) => {
+    try {
+        let data = {
+            name: req.body.name,
+            location: req.body.location,
+            position: req.body.position,
+            salary: req.body.salary
         }
-    });
-    console.log("Data upadeted successsfully!");
+        let id = req.body._id;
+        const updatedResult = await employeeModel.findOneAndUpdate({ "_id": id }, data);
+        res.send(updatedResult);
+        console.log("Data upadeted successsfully!");
+    }
+    catch {
+        res.status(400).json({ message: err.message })
+    }
 });
 
 //! dont delete this code. it connects the front end file.
